@@ -1,0 +1,71 @@
+devtools::load_all("/home/retger/FlowCap/scripts/censcyt")
+# devtools::load_all("/home/reto/polybox/ETH/Master_Thesis/Code/censcyt")
+library(ggplot2)
+library(tidyverse)
+set.seed(123)
+transform_fns <- c("identity","log_positive","boxcox_positive")
+formula_cens_glmm <- formula(y~Surv(X,I)+z+(1|r))
+censoring_params <- censcyt::scales_for_censoring(c(0.3,0.5,0.7),log_ratio_val = c(0,0.4))
+censoring_params <- censoring_params %>% filter(censoring==0.7)
+censoring_list <- list(censoring = rep(censoring_params$censoring,length(transform_fns)), 
+                       log_ratio = rep(censoring_params$log_ratio,length(transform_fns)), 
+                       C1 = rep(censoring_params$C1,length(transform_fns)), 
+                       C2 = rep(censoring_params$C2,length(transform_fns)),
+                       transform_fn = rep(transform_fns,each=length(censoring_params$censoring)))
+df_ls <- purrr::pmap(censoring_list, function(censoring, log_ratio, C1, C2, transform_fn){
+  data_sim <- simulate_data(n = 10000000, formula = formula_cens_glmm, type = "glmer",
+                            error_variance = 0,
+                            b = c(-2,1,1),
+                            weibull_params = list(X = list(shape = 0.5, scale = 0.25),
+                                                  C = list(shape = 1, scale = C1)),
+                            variance_fixeff = 0.5,
+                            variance_raneff = 0.5,
+                            n_levels_raneff = NULL,
+                            n_levels_fixeff = 2,
+                            censoring_dependent_on_covariate = TRUE,
+                            weibull_params_covariate_dependent_censoring = list(shape = 0.5, scale = C2),
+                            transform_fn = transform_fn)
+  data_sim$X_br <- cut(data_sim$X,breaks = 100)
+  censrate <- unlist(purrr::map(levels(data_sim$X_br), function(x){
+    I <- data_sim$I[data_sim$X_br==x]
+    return(1-sum(I)/length(I))
+  }))
+  nr_x <- unlist(purrr::map(levels(data_sim$X_br), function(x){
+    return(sum(data_sim$X_br==x)/length(data_sim$I))
+  }))
+  levels_begin <- as.numeric(stringr::str_extract(levels(data_sim$X_br),"[-]?[:digit:]+[.]?[:digit:]*"))
+  return(data.frame(censrate = censrate, 
+                    nr_x = nr_x, 
+                    levels_begin=levels_begin, 
+                    log_ratio=log_ratio,
+                    censoring=censoring, 
+                    transform_fn=transform_fn,
+                    mean_censoring = 1-sum(data_sim$I)/dim(data_sim)[1]))
+
+})
+df_ls <- purrr::map(df_ls,function(x){
+  x <- arrange(x,levels_begin)
+  mutate(x,density=x$nr_x/c(x$levels_begin[c(2:100)]-x$levels_begin[c(1:99)],0.008))
+})
+dfplt <- bind_rows(df_ls) %>%
+  mutate(cov_dep_cens = factor(log_ratio,levels=c(0,0.4),labels=c("MCAR","MAR")),
+         transform_fn = factor(transform_fn,levels = transform_fns,labels = transform_fns))
+
+plt <- ggplot(dfplt) + 
+  geom_hline(aes(yintercept=mean_censoring))+
+  # geom_point(aes(levels_begin,mean_censoring,color="mean\ncensoring\nrate")) +
+  geom_line(aes(levels_begin,density,color="density"),size=1) +
+  geom_line(aes(levels_begin,density*censrate,color="density*censoring rate"),size=1) +
+  geom_point(aes(levels_begin,censrate,color="censoring rate")) +
+  labs(x="x",y="censoring rate / density", colour = "") + 
+  facet_wrap(cov_dep_cens~transform_fn,scales = "free_x",nrow = 2) + 
+  scale_y_continuous(breaks = seq(0,1,0.1)) +
+  coord_cartesian(ylim = c(0,1)) +
+  # theme_bw() +
+  theme(legend.position = "top",
+        panel.grid.minor = element_blank(), 
+        panel.grid.major.x = element_line(size=0.2)) 
+  # scale_color_hue(c=80,l=70)+
+  # scale_color_manual(values=c("#999900","#66CCCC"))
+# plt
+ggsave("/home/retger/FlowCap/plots/Framework/censoring_mechanism_comparison.png",plt, width = 12)
