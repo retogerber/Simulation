@@ -25,7 +25,10 @@ df_ls <- purrr::pmap(censoring_list, function(censoring, log_ratio, C1, C2, tran
                             censoring_dependent_on_covariate = TRUE,
                             weibull_params_covariate_dependent_censoring = list(shape = 0.5, scale = C2),
                             transform_fn = transform_fn)
-  data_sim$X_br <- cut(data_sim$X,breaks = 100)
+  minmax <- list(minx=ifelse(min(data_sim$X)==0,-0.0001,min(data_sim$X)*0.9999),maxx=max(data_sim$X)*1.0001)
+  minmax$diff <- minmax$maxx-minmax$minx
+  seq_labs <-  seq(minmax$minx,minmax$maxx,by=minmax$diff/100)
+  data_sim$X_br <- cut(data_sim$X,breaks = seq_labs,labels=seq_labs[-101])
   censrate <- unlist(purrr::map(levels(data_sim$X_br), function(x){
     I <- data_sim$I[data_sim$X_br==x]
     return(1-sum(I)/length(I))
@@ -33,7 +36,7 @@ df_ls <- purrr::pmap(censoring_list, function(censoring, log_ratio, C1, C2, tran
   nr_x <- unlist(purrr::map(levels(data_sim$X_br), function(x){
     return(sum(data_sim$X_br==x)/length(data_sim$I))
   }))
-  levels_begin <- as.numeric(stringr::str_extract(levels(data_sim$X_br),"[-]?[:digit:]+[.]?[:digit:]*"))
+  levels_begin <- as.numeric(levels(data_sim$X_br))
   return(data.frame(censrate = censrate, 
                     nr_x = nr_x, 
                     levels_begin=levels_begin, 
@@ -45,7 +48,9 @@ df_ls <- purrr::pmap(censoring_list, function(censoring, log_ratio, C1, C2, tran
 })
 df_ls <- purrr::map(df_ls,function(x){
   x <- arrange(x,levels_begin)
-  mutate(x,density=x$nr_x/c(x$levels_begin[c(2:100)]-x$levels_begin[c(1:99)],0.008))
+  mutate(x,
+         cut_length = rep(diff(x$levels_begin[1:2]),100),
+         density=x$nr_x/cut_length)
 })
 dfplt <- bind_rows(df_ls) %>%
   mutate(cov_dep_cens = factor(log_ratio,levels=c(0,0.4),labels=c("MCAR","MAR")),
@@ -68,4 +73,4 @@ plt <- ggplot(dfplt) +
   # scale_color_hue(c=80,l=70)+
   # scale_color_manual(values=c("#999900","#66CCCC"))
 # plt
-ggsave("/home/retger/FlowCap/plots/Framework/censoring_mechanism_comparison.png",plt, width = 12)
+ggsave("/home/retger/FlowCap/plots/Framework/censoring_mechanism_comparison.png",plt, width = 18,height=12)
