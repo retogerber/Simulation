@@ -1,6 +1,6 @@
 # set working directory to directory of this script
 # setwd(directory_name)
-setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts")
+setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Simulated/Plot_scripts")
 
 
 ################################################################################
@@ -174,7 +174,7 @@ tmp_plts <- purrr::map(seq_along(tmp_plt_ind$id), function(i){
     theme(aspect.ratio=1) + 
     guides(colour = guide_legend(nrow = 1))
 })
-plt_comb <- ggarrange(plotlist = tmp_plts,nrow=1,ncol=3, common.legend = TRUE)#,ncol=2)
+plt_comb <- ggarrange(plotlist = list(tmp_plts[[2]],tmp_plts[[3]],tmp_plts[[1]]),nrow=1,ncol=3, common.legend = TRUE)#,ncol=2)
 plt_comb <- annotate_figure(plt_comb, 
                             fig.lab = "Data transformation",fig.lab.size = 14,fig.lab.face = "bold")
 ggsave(paste0(plot_dir,"simulation_multicluster_effect_transform.png"), plt_comb, width = 30, height = 13, units = "cm")

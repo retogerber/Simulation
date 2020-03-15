@@ -1,6 +1,6 @@
 # set working directory to directory of this script
 # setwd(directory_name)
-setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts")
+setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Simulated/Plot_scripts")
 
 
 ################################################################################
@@ -331,7 +331,6 @@ plt_simtype <- annotate_figure(plt_simtype,
 ggsave(paste0(plot_dir,"simulation_normal_effect_simtype.png"), plt_simtype, 
        width = plot_width, height = plot_height, units = "cm",dpi=600)
 
-################################################################################
 
 
 
