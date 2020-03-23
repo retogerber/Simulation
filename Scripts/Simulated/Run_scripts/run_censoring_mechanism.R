@@ -5,9 +5,9 @@ setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts")
 
 ################################################################################
 ## load packages and data
+library(censcyt)
 library(tidyverse)
 library(ggpubr)
-devtools::load_all("/home/retger/FlowCap/scripts/censcyt")
 
 # number of datapoints to simulate, high number to get smoother curve
 nn <- 10000000

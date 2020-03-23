@@ -5,7 +5,7 @@ setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Si
 
 ################################################################################
 ## load packages 
-devtools::load_all("/home/reto/polybox/ETH/Master_Thesis/Code/censcyt")
+library(censcyt)
 library(tidyverse)
 library(ggpubr)
 plot_dir <- "../../../Plots/Simulated/"

@@ -1,5 +1,5 @@
 ### run on cluster with many cores
-devtools::load_all("/home/retger/FlowCap/scripts/censcyt")
+library(censcyt)
 out_ls <- run_simulations_wrapper(reps = 10,
                                   nr_cores = 60,
                                   n_obs_c = c(10,20,50),

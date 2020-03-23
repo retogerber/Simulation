@@ -5,8 +5,7 @@ setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Sp
 
 ################################################################################
 ## load packages
-devtools::load_all("/home/reto/polybox/ETH/Master_Thesis/Code/censcyt")
-
+library(censcyt)
 library(flowCore)
 library(dplyr)
 library(reshape2)

@@ -1,13 +1,13 @@
 # set working directory to directory of this script
 # setwd(directory_name)
-setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts")
+setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Simulated/Run_scripts")
 
 
 ################################################################################
 ## load packages and data
 library(tidyverse)
 library(ggpubr)
-devtools::load_all("/home/retger/FlowCap/scripts/censcyt")
+library(censcyt)
 
 plot_dir <- "../../../Plots/Simulated/"
 dir_save <- "../../../Data/Simulated/"

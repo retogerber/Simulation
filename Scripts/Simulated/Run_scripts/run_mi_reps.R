@@ -1,5 +1,5 @@
 ### run on cluster with 6 cores
-devtools::load_all("/home/retger/FlowCap/scripts/censcyt")
+library(censcyt)
 library(tidyverse)
 
 set.seed(123)

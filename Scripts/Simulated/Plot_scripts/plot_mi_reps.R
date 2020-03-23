@@ -1,6 +1,6 @@
 # set working directory to directory of this script
 # setwd(directory_name)
-setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts")
+setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Simulated/Run_scripts")
 
 
 ################################################################################
