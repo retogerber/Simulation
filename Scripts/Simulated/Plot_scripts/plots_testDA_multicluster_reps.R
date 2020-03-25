@@ -118,7 +118,7 @@ plts <-   purrr::map(cond_filt,function(cond_n_dat){
   cobraperf <- calculate_performance(cobradata,
                                      binary_truth = "status",
                                      aspects = c("fdrtpr", "fdrtprcurve",
-                                                 "tpr", "roc"),
+                                                 "tpr", "roc", "fpr","overlap"),
                                      thrs = c(0.01, 0.05, 0.1))
   print(tmp_impTypes)
   color_ind <- unlist(purrr::map(tmp_impTypes, ~which(.x==all_impTypes)))
@@ -126,7 +126,7 @@ plts <-   purrr::map(cond_filt,function(cond_n_dat){
                                      facetted = TRUE)
   return(cobraplot)
 })
-
+saveRDS(list(cobradata = plts, arg_df = arg_df),paste0(dir_save,"multicluster_cobra_data.rds"))
 
 ################################################################################
 ## censoring

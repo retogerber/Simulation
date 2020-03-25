@@ -32,7 +32,7 @@ est_plot <- function(tib2plt_n_dat, facetting_var,legend_label){
     geom_boxplot(aes(1, b1), size=0.2)+
     geom_point(aes(1, b1, color=factor(!!facetting_var)), size=1) + 
     geom_hline(yintercept = -0.5) +
-    labs(color = legend_label, y = expression(hat(b1)), x = "") +
+    labs(color = legend_label, y = expression(hat(beta)["1"]), x = "") +
     facet_wrap(vars(!!facetting_var,impType),nrow = 1) +
     theme(axis.text.x = element_blank(),
           panel.grid.major.x = element_blank(),
@@ -45,7 +45,7 @@ est_plot <- function(tib2plt_n_dat, facetting_var,legend_label){
 
 ################################################################################
 ## mse plot
-mse_plot <- function(tib2plt, facetting_var,legend_label,b1_True_val=-1.5){
+mse_plot <- function(tib2plt, facetting_var,legend_label,b1_True_val=-0.5){
   mse_fn <- function(x,b1_True_val=b1_True_val){
     ceiling((1/length(x))*sum((x-b1_True_val)^2)*1000)/1000
   }

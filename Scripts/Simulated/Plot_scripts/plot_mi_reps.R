@@ -1,6 +1,6 @@
 # set working directory to directory of this script
 # setwd(directory_name)
-setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Simulated/Run_scripts")
+setwd("/home/reto/polybox/ETH/Master_Thesis/Code/Framework/Simulation/Scripts/Simulated/Plot_scripts")
 
 
 ################################################################################
@@ -36,13 +36,14 @@ plt1 <- ggplot(res_long %>% filter(name %in% c("p-value"))) +
   geom_point(aes(mi_rep,value,color=sim_cond))+
   geom_line(aes(mi_rep,value,color=sim_cond)) +
   scale_color_manual(values = c(RColorBrewer::brewer.pal(4,"Greens")[-1],RColorBrewer::brewer.pal(4,"Blues")[-1])) +
-  scale_x_continuous(breaks = c(0,mi_reps[-c(1,2,3,4,5,6,7,8,9,11,13)])) +
+  scale_x_continuous(breaks = c(0,mi_reps[-c(1,2,3,4,5,6,7,8,9,10,11,13,14)])) +
   scale_y_continuous(breaks = c(0,0.05,0.25,0.5,0.75,1)) +
   facet_wrap(name~method_est,ncol = 5) +
   theme(panel.grid.minor = element_blank(),
         panel.grid.major.y = element_line(size=0.2),
         panel.grid.major.x = element_line(size=0.3),
-        legend.position = "none") +
+        legend.position = "none", 
+        strip.text = element_text(size=15)) +
   guides(color=guide_legend(nrow=2,byrow = TRUE)) +
   labs(x="",y="",color="Simulation\nCondition")
 
@@ -50,14 +51,16 @@ plt2 <- ggplot(res_long %>% filter(name %in% c("estimate"))) +
   geom_point(aes(mi_rep,value,color=sim_cond))+
   geom_line(aes(mi_rep,value,color=sim_cond)) +
   scale_color_manual(values = c(RColorBrewer::brewer.pal(4,"Greens")[-1],RColorBrewer::brewer.pal(4,"Blues")[-1])) +
-  scale_x_continuous(breaks = c(0,mi_reps[-c(1,2,3,4,5,6,7,8,9,11,13)])) +
+  scale_x_continuous(breaks = c(0,mi_reps[-c(1,2,3,4,5,6,7,8,9,10,11,13,14)])) +
   scale_y_continuous(breaks = c(0,2,4,6)) +
   facet_wrap(name~method_est,ncol = 5) +
   geom_hline(yintercept = 1) +
   theme(panel.grid.minor = element_blank(),
         panel.grid.major.y = element_line(size=0.2),
         panel.grid.major.x = element_line(size=0.3),
-        legend.position = "none") +
+        legend.position = "none",
+        axis.text.x = element_text(size=10), 
+        strip.text = element_text(size=15)) +
   labs(x="Multiple Imputation repetitions",y="",color="Simulation\nCondition")
 plt_empty <- ggplot(res_long) + geom_blank() + theme_bw() + theme(line = element_blank(),rect = element_blank())
 plt_comb <- ggarrange(ggarrange(plt_empty,plt0,plt_empty,ncol = 3),plt1,plt2,nrow=3, heights = c(1,5,5))
