@@ -48,40 +48,8 @@ mse_fn <- function(x,b1_True_val=-1.5){
   (1/length(x))*sum((x-b1_True_val)^2)
 }
 
-
-cond_ls <- 
-  list(
 ################################################################################
-## kulbach leibler divergence
-    g7_kls_n10 = list(
-      data = test_results_null_proc %>%  filter(n_dat == 10),
-      func = kulback_leibler_divergence,
-      x = "pval",
-      lvls = c(-Inf,0.05,0.1,Inf),
-      name = "g7_n10",
-      methods = methods_no_cc
-    ),
-    g7_kls_n20 = list(
-      data = test_results_null_proc %>%  filter(n_dat == 20),
-      func = kulback_leibler_divergence,
-      x = "pval",
-      lvls = c(-Inf,0.05,0.1,Inf),
-      name = "g7_n20",
-      methods = methods
-    ),
-    g7_kls_n50 = list(
-      data = test_results_null_proc %>%  filter(n_dat == 50),
-      func = kulback_leibler_divergence,
-      x = "pval",
-      lvls = c(-Inf,0.05,0.1,Inf),
-      name = "g7_n50",
-      methods = methods
-    )
-)
-
-################################################################################
-
-
+## plot data preparation
 template <- list(
   mse_b1_template_name = list(
     data = data.frame(),
@@ -129,6 +97,37 @@ add_list_entry <- function(name, data, methods = methods, templ = template, tmp_
   }
   return(tmp_cond_ls)
 }
+
+################################################################################
+## add all cases, rows in plot
+cond_ls <- 
+  list(
+    ## p-values under null model
+    g7_kls_n10 = list(
+      data = test_results_null_proc %>%  filter(n_dat == 10),
+      func = kulback_leibler_divergence,
+      x = "pval",
+      lvls = c(-Inf,0.05,0.1,Inf),
+      name = "g7_n10",
+      methods = methods_no_cc
+    ),
+    g7_kls_n20 = list(
+      data = test_results_null_proc %>%  filter(n_dat == 20),
+      func = kulback_leibler_divergence,
+      x = "pval",
+      lvls = c(-Inf,0.05,0.1,Inf),
+      name = "g7_n20",
+      methods = methods
+    ),
+    g7_kls_n50 = list(
+      data = test_results_null_proc %>%  filter(n_dat == 50),
+      func = kulback_leibler_divergence,
+      x = "pval",
+      lvls = c(-Inf,0.05,0.1,Inf),
+      name = "g7_n50",
+      methods = methods
+    )
+  )
 
 cond_ls <- add_list_entry("g1_identity", 
                           test_results_proc %>%   
@@ -327,9 +326,9 @@ cond_ls <- add_list_entry("g8_-1.5",
                                    transform_fn =="log_positive"
                             ),
                           templ = template_b1_1.5)
-# cond <- cond_ls$fdr_satis_mult
+
+## data processing
 sum_data <- map(cond_ls, function(cond){
-  # method <- "cc"
   tmp_tib <- map(cond[["methods"]],function(method){
     data <- cond[["data"]][cond[["data"]]$impType==method,][[cond[["x"]]]]
     tibble(method_names = method, 
@@ -393,19 +392,19 @@ for (i in seq_along(labels_to_use)) {
 sum_data_gath_gr$group <- factor(sum_data_gath_gr$group, 
                                  levels = labels_to_use)
 
+################################################################################
+## plot
 plt <- ggplot(sum_data_gath_gr ) + 
   geom_tile(aes(method_names,test,fill=score), width=0.9, height=0.9,color = "black") + 
   scale_fill_manual(values=RColorBrewer::brewer.pal(11,"RdYlBu")[c(9,5,3)], 
                       na.translate=FALSE) +
-  # theme_bw() + 
   facet_grid(group~., scales = "free", space = "free") +
   theme(line = element_blank(),
         legend.title = element_blank(),
         axis.line = element_blank(),
         panel.background = element_rect(fill="white"),
         text = element_text(size=15)) +
-  # scale_fill_discrete() + 
   labs(x=element_blank(),y=element_blank())
-plt
+
 ggsave(paste0(plot_dir,"summary.png"), plt, width = 20, height = 25, units = "cm")
 
